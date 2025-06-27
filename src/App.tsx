@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Search, Youtube, AlertCircle, CheckCircle2, Brain, Database, Zap, Target, TrendingUp, Play, Sparkles, Star, ArrowDown, ChevronDown, Clock, Shield, Infinity, Heart, Rocket, Award, Instagram } from 'lucide-react';
+import { Search, Youtube, AlertCircle, CheckCircle2, Brain, Database, Zap, Target, TrendingUp, Play, Sparkles, Star, ArrowDown, ChevronDown, Clock, Shield, Infinity, Heart, Rocket, Award } from 'lucide-react';
 import { YouTubeVideo } from './types/youtube';
 import { findSeriesVideos, getFeedbackStats } from './utils/seriesFinder';
 import { VideoCard } from './components/VideoCard';
@@ -14,7 +14,6 @@ function App() {
   const [seriesVideos, setSeriesVideos] = useState<YouTubeVideo[]>([]);
   const [originalVideo, setOriginalVideo] = useState<YouTubeVideo | null>(null);
   const [feedbackCount, setFeedbackCount] = useState(0);
-  const [selectedPlatform, setSelectedPlatform] = useState<'youtube' | 'instagram' | 'tiktok'>('youtube');
   const [feedbackStats, setFeedbackStats] = useState({
     totalFeedback: 0,
     thumbsUp: 0,
@@ -38,11 +37,6 @@ function App() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
-    if (selectedPlatform !== 'youtube') {
-      setError(`${selectedPlatform === 'instagram' ? 'Instagram Reels' : 'TikTok'} support is coming soon! Currently only YouTube is supported.`);
-      return;
-    }
     
     if (!url.trim()) {
       setError('Please enter a YouTube URL');
@@ -112,35 +106,6 @@ function App() {
       searchSection.scrollIntoView({ behavior: 'smooth' });
     }
   };
-
-  const platforms = [
-    {
-      id: 'youtube' as const,
-      name: 'YouTube',
-      icon: Youtube,
-      placeholder: 'Paste YouTube URL here (e.g., youtube.com/shorts/...)',
-      available: true,
-      color: 'text-red-500'
-    },
-    {
-      id: 'instagram' as const,
-      name: 'Instagram Reels',
-      icon: Instagram,
-      placeholder: 'Instagram Reels support coming soon...',
-      available: false,
-      color: 'text-pink-500'
-    },
-    {
-      id: 'tiktok' as const,
-      name: 'TikTok',
-      icon: Play,
-      placeholder: 'TikTok support coming soon...',
-      available: false,
-      color: 'text-purple-500'
-    }
-  ];
-
-  const currentPlatform = platforms.find(p => p.id === selectedPlatform)!;
 
   return (
     <div className="min-h-screen bg-black relative overflow-hidden font-sans">
@@ -243,7 +208,7 @@ function App() {
               </div>
 
               {/* Call-to-Action */}
-              <div className="flex flex-col items-center gap-6 sm:gap-8 mb-12 sm:mb-16">
+              <div className="flex flex-col items-center gap-6 sm:gap-8">
                 <button
                   onClick={scrollToSearch}
                   className="group relative overflow-hidden bg-white text-black px-8 sm:px-12 py-4 sm:py-6 rounded-xl sm:rounded-2xl font-bold text-lg sm:text-xl hover:bg-gray-100 focus:outline-none focus:ring-4 focus:ring-white focus:ring-offset-2 focus:ring-offset-black transition-all duration-300 flex items-center gap-3 sm:gap-4 shadow-2xl hover:shadow-white/25 hover:scale-105"
@@ -262,129 +227,11 @@ function App() {
                   <ArrowDown className="relative w-5 h-5 sm:w-6 sm:h-6 group-hover:translate-y-1 transition-transform" />
                 </button>
 
-                {/* Search Form - Moved here from separate section */}
-                <div id="search-section" className="w-full max-w-3xl">
-                  {/* Platform Selector */}
-                  <div className="mb-6">
-                    <div className="flex items-center justify-center gap-2 mb-4">
-                      <span className="text-gray-400 text-sm font-medium">Choose Platform:</span>
-                    </div>
-                    <div className="flex items-center justify-center gap-2 sm:gap-4">
-                      {platforms.map((platform) => {
-                        const Icon = platform.icon;
-                        return (
-                          <button
-                            key={platform.id}
-                            onClick={() => setSelectedPlatform(platform.id)}
-                            disabled={!platform.available}
-                            className={`relative group flex items-center gap-2 sm:gap-3 px-4 sm:px-6 py-3 sm:py-4 rounded-xl sm:rounded-2xl font-semibold transition-all duration-300 border ${
-                              selectedPlatform === platform.id
-                                ? 'bg-white text-black border-white shadow-lg'
-                                : platform.available
-                                ? 'bg-white/10 text-white border-white/20 hover:bg-white/20'
-                                : 'bg-white/5 text-gray-500 border-white/10 cursor-not-allowed'
-                            }`}
-                          >
-                            <Icon className={`w-4 h-4 sm:w-5 sm:h-5 ${
-                              selectedPlatform === platform.id 
-                                ? 'text-black' 
-                                : platform.available 
-                                ? platform.color 
-                                : 'text-gray-600'
-                            }`} />
-                            <span className="text-sm sm:text-base">{platform.name}</span>
-                            {!platform.available && (
-                              <span className="absolute -top-2 -right-2 bg-yellow-500 text-black text-xs px-2 py-1 rounded-full font-bold">
-                                Soon
-                              </span>
-                            )}
-                          </button>
-                        );
-                      })}
-                    </div>
-                  </div>
-
-                  <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-6">
-                    <div className="relative group">
-                      <div className="absolute inset-0 bg-white rounded-xl sm:rounded-2xl blur-lg opacity-10 group-hover:opacity-20 transition-opacity"></div>
-                      <div className="relative">
-                        <div className="absolute inset-y-0 left-0 pl-4 sm:pl-6 flex items-center pointer-events-none">
-                          <currentPlatform.icon className={`h-5 w-5 sm:h-6 sm:w-6 ${
-                            currentPlatform.available ? 'text-gray-400' : 'text-gray-600'
-                          }`} />
-                        </div>
-                        <input
-                          type="url"
-                          value={url}
-                          onChange={(e) => setUrl(e.target.value)}
-                          placeholder={currentPlatform.placeholder}
-                          disabled={!currentPlatform.available || loading}
-                          className={`w-full pl-12 sm:pl-16 pr-4 sm:pr-6 py-4 sm:py-6 bg-white/5 backdrop-blur-xl border border-white/20 rounded-xl sm:rounded-2xl text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-white focus:border-transparent transition-all duration-300 text-base sm:text-lg shadow-2xl ${
-                            !currentPlatform.available ? 'cursor-not-allowed opacity-50' : ''
-                          }`}
-                        />
-                      </div>
-                    </div>
-                    
-                    <div className="flex gap-3 sm:gap-4">
-                      <button
-                        type="submit"
-                        disabled={loading || !currentPlatform.available}
-                        className="flex-1 relative group overflow-hidden bg-white text-black py-4 sm:py-6 px-6 sm:px-8 rounded-xl sm:rounded-2xl font-bold text-base sm:text-lg hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-black transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 sm:gap-3 shadow-2xl"
-                      >
-                        <div className="absolute inset-0 bg-gradient-to-r from-black/0 via-black/10 to-black/0 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000"></div>
-                        {loading ? (
-                          <>
-                            <div className="w-5 h-5 sm:w-6 sm:h-6 border-2 border-black border-t-transparent rounded-full animate-spin"></div>
-                            <span className="hidden sm:inline">Analyzing Creator's Content...</span>
-                            <span className="sm:hidden">Analyzing...</span>
-                          </>
-                        ) : (
-                          <>
-                            <Search className="w-5 h-5 sm:w-6 sm:h-6" />
-                            <span className="hidden sm:inline">
-                              {currentPlatform.available ? 'Find Series Videos' : `${currentPlatform.name} Coming Soon`}
-                            </span>
-                            <span className="sm:hidden">
-                              {currentPlatform.available ? 'Find Videos' : 'Coming Soon'}
-                            </span>
-                            <Sparkles className="w-4 h-4 sm:w-5 sm:h-5" />
-                          </>
-                        )}
-                      </button>
-                      
-                      {seriesVideos.length > 0 && (
-                        <button
-                          type="button"
-                          onClick={clearResults}
-                          className="px-6 sm:px-8 py-4 sm:py-6 bg-white/10 backdrop-blur-xl border border-white/20 text-white rounded-xl sm:rounded-2xl hover:bg-white/20 transition-all duration-300 font-medium shadow-xl"
-                        >
-                          Clear
-                        </button>
-                      )}
-                    </div>
-                  </form>
-
-                  {/* Error Message */}
-                  {error && (
-                    <div className="mt-6 sm:mt-8">
-                      <div className="bg-white/10 backdrop-blur-xl border border-white/30 rounded-xl sm:rounded-2xl p-4 sm:p-6 flex items-center gap-3 sm:gap-4 shadow-2xl">
-                        <div className="p-2 bg-white/20 rounded-full">
-                          <AlertCircle className="w-5 h-5 sm:w-6 sm:h-6 text-white flex-shrink-0" />
-                        </div>
-                        <p className="text-gray-300 text-base sm:text-lg">{error}</p>
-                      </div>
-                    </div>
-                  )}
+                {/* Scroll Indicator */}
+                <div className="flex flex-col items-center gap-2 animate-bounce">
+                  <span className="text-gray-500 text-sm font-medium">Look Down Bitch</span>
+                  <ChevronDown className="w-5 h-5 sm:w-6 sm:h-6 text-gray-100" />
                 </div>
-
-                {/* Scroll Indicator - Only show if no search form is visible */}
-                {!url && !loading && seriesVideos.length === 0 && (
-                  <div className="flex flex-col items-center gap-2 animate-bounce">
-                    <span className="text-gray-500 text-sm font-medium">Look Down Bitch</span>
-                    <ChevronDown className="w-5 h-5 sm:w-6 sm:h-6 text-gray-100" />
-                  </div>
-                )}
               </div>
             </div>
 
@@ -435,7 +282,7 @@ function App() {
                   </div>
                   <h3 className="text-lg sm:text-xl font-bold text-white">
                     <DecryptedText 
-                      text="Multi-Platform"
+                      text="Smart Learning"
                       animateOn="hover"
                       speed={80}
                       maxIterations={8}
@@ -444,7 +291,7 @@ function App() {
                     />
                   </h3>
                 </div>
-                <p className="text-sm sm:text-base text-gray-400 leading-relaxed">YouTube available now. Instagram Reels and TikTok support coming soon!</p>
+                <p className="text-sm sm:text-base text-gray-400 leading-relaxed">Continuous improvement through user feedback and negative example storage.</p>
               </div>
             </div>
           </div>
@@ -635,7 +482,7 @@ Smarter than YouTube's 'Up next'.
                 </div>
               </div>
 
-              {/* Benefit 6: Multi-Platform Support */}
+              {/* Benefit 6: Discover Hidden Gems */}
               <div className="group relative bg-white/5 backdrop-blur-xl rounded-2xl p-8 border border-white/10 hover:bg-white/10 transition-all duration-500 hover:scale-105 hover:shadow-2xl hover:shadow-white/10">
                 <div className="absolute inset-0 bg-white/5 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
                 <div className="relative">
@@ -645,7 +492,7 @@ Smarter than YouTube's 'Up next'.
                     </div>
                     <h3 className="text-xl sm:text-2xl font-bold text-white">
                       <DecryptedText 
-                        text="Multi-Platform Ready"
+                        text="Discover Hidden Gems"
                         animateOn="hover"
                         speed={60}
                         maxIterations={10}
@@ -655,12 +502,12 @@ Smarter than YouTube's 'Up next'.
                     </h3>
                   </div>
                   <p className="text-gray-400 leading-relaxed mb-4">
-                   YouTube works now. Instagram Reels and TikTok coming soon.
-One app for all your short-form series needs.
+                   For when Part 1 is from 2 years ago, and YouTube forgot it.
+Uncover spin-offs even the creator forgot they made.
                   </p>
                   <div className="flex items-center gap-2 text-sm text-gray-500">
                     <CheckCircle2 className="w-4 h-4" />
-                    <span>Expanding platform support</span>
+                    <span>Comprehensive discovery</span>
                   </div>
                 </div>
               </div>
@@ -687,131 +534,200 @@ One app for all your short-form series needs.
           </div>
         </section>
 
-        {/* Results Section */}
-        {seriesVideos.length > 0 && originalVideo && (
-          <section className="container mx-auto px-4 sm:px-6 py-8 sm:py-12">
-            {/* Enhanced Architecture Display */}
-            <div className="bg-white/5 backdrop-blur-xl rounded-xl sm:rounded-2xl p-4 sm:p-6 max-w-5xl mx-auto border border-white/10 shadow-2xl mb-12 sm:mb-16">
-              <div className="text-sm text-gray-300 space-y-4">
-                <div className="flex items-center justify-center gap-2 mb-4">
-                  <Brain className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
-                  <span className="font-semibold text-base sm:text-lg text-white">
-                    <DecryptedText 
-                      text="Enhanced AI Architecture"
-                      animateOn="view"
-                      speed={60}
-                      maxIterations={12}
-                      className="text-white"
-                      encryptedClassName="text-gray-500 opacity-60"
-                    />
+        {/* Search Section */}
+        <section id="search-section" className="container mx-auto px-4 sm:px-6 py-8 sm:py-12">
+          {/* Enhanced Architecture Display */}
+          <div className="bg-white/5 backdrop-blur-xl rounded-xl sm:rounded-2xl p-4 sm:p-6 max-w-5xl mx-auto border border-white/10 shadow-2xl mb-12 sm:mb-16">
+            <div className="text-sm text-gray-300 space-y-4">
+              <div className="flex items-center justify-center gap-2 mb-4">
+                <Brain className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
+                <span className="font-semibold text-base sm:text-lg text-white">
+                  <DecryptedText 
+                    text="Enhanced AI Architecture"
+                    animateOn="view"
+                    speed={60}
+                    maxIterations={12}
+                    className="text-white"
+                    encryptedClassName="text-gray-500 opacity-60"
+                  />
+                </span>
+                <Brain className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
+              </div>
+              
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-xs sm:text-sm">
+                <div className="bg-white/10 rounded-lg sm:rounded-xl p-3 sm:p-4 border border-white/20">
+                  <div className="flex items-center gap-2 mb-2">
+                    <Database className="w-3 h-3 sm:w-4 sm:h-4 text-white" />
+                    <span className="font-semibold text-white">Training Dataset</span>
+                  </div>
+                  <p className="text-gray-400 mb-1 sm:mb-2">• 772+ synthetic training videos</p>
+                  <p className="text-gray-400 mb-1 sm:mb-2">• Advanced embedding vectors</p>
+                  <p className="text-gray-400">• Pattern recognition training</p>
+                </div>
+                
+                <div className="bg-white/10 rounded-lg sm:rounded-xl p-3 sm:p-4 border border-white/20">
+                  <div className="flex items-center gap-2 mb-2">
+                    <Youtube className="w-3 h-3 sm:w-4 sm:h-4 text-white" />
+                    <span className="font-semibold text-white">Live Analysis</span>
+                  </div>
+                  <p className="text-gray-400 mb-1 sm:mb-2">• Real-time creator data</p>
+                  <p className="text-gray-400 mb-1 sm:mb-2">• YouTube API integration</p>
+                  <p className="text-gray-400">• Dynamic content matching</p>
+                </div>
+                
+                <div className="bg-white/10 rounded-lg sm:rounded-xl p-3 sm:p-4 border border-white/20">
+                  <div className="flex items-center gap-2 mb-2">
+                    <TrendingUp className="w-3 h-3 sm:w-4 sm:h-4 text-white" />
+                    <span className="font-semibold text-white">Smart Learning</span>
+                  </div>
+                  <p className="text-gray-400 mb-1 sm:mb-2">• User feedback integration</p>
+                  <p className="text-gray-400 mb-1 sm:mb-2">• Continuous improvement</p>
+                  <p className="text-gray-400">• Negative example storage</p>
+                </div>
+              </div>
+              
+              <div className="bg-white/10 rounded-lg sm:rounded-xl p-3 sm:p-4 mt-4 border border-white/20">
+                <p className="text-center text-gray-300 text-xs sm:text-sm">
+                  <span className="font-semibold text-white">🧠 Workflow:</span> 
+                  Input Video → Creator Analysis → AI Pattern Matching → Series Discovery → Continuous Learning
+                </p>
+              </div>
+            </div>
+          </div>
+
+          {/* Enhanced Feedback Statistics Dashboard */}
+          {feedbackStats.totalFeedback > 0 && (
+            <div className="bg-white/5 backdrop-blur-xl rounded-xl sm:rounded-2xl p-4 sm:p-6 max-w-3xl mx-auto mb-12 sm:mb-16 border border-white/10 shadow-2xl">
+              <div className="flex items-center justify-center gap-3 mb-4 sm:mb-6">
+                <div className="p-2 bg-white rounded-lg">
+                  <TrendingUp className="w-5 h-5 sm:w-6 sm:h-6 text-black" />
+                </div>
+                <h3 className="text-xl sm:text-2xl font-bold text-white">Learning Progress</h3>
+              </div>
+              
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6">
+                <div className="text-center group">
+                  <div className="relative mb-2">
+                    <div className="absolute inset-0 bg-white rounded-full blur-lg opacity-20 group-hover:opacity-30 transition-opacity"></div>
+                    <div className="relative text-2xl sm:text-3xl font-black text-white bg-black/80 rounded-full w-12 h-12 sm:w-16 sm:h-16 flex items-center justify-center mx-auto border border-white/30">
+                      {feedbackStats.totalFeedback}
+                    </div>
+                  </div>
+                  <div className="text-gray-400 font-medium text-sm">Total Feedback</div>
+                </div>
+                
+                <div className="text-center group">
+                  <div className="relative mb-2">
+                    <div className="absolute inset-0 bg-white rounded-full blur-lg opacity-20 group-hover:opacity-30 transition-opacity"></div>
+                    <div className="relative text-2xl sm:text-3xl font-black text-white bg-black/80 rounded-full w-12 h-12 sm:w-16 sm:h-16 flex items-center justify-center mx-auto border border-white/30">
+                      {feedbackStats.thumbsUp}
+                    </div>
+                  </div>
+                  <div className="text-gray-400 font-medium text-sm">👍 Positive</div>
+                </div>
+                
+                <div className="text-center group">
+                  <div className="relative mb-2">
+                    <div className="absolute inset-0 bg-white rounded-full blur-lg opacity-20 group-hover:opacity-30 transition-opacity"></div>
+                    <div className="relative text-2xl sm:text-3xl font-black text-white bg-black/80 rounded-full w-12 h-12 sm:w-16 sm:h-16 flex items-center justify-center mx-auto border border-white/30">
+                      {feedbackStats.thumbsDown}
+                    </div>
+                  </div>
+                  <div className="text-gray-400 font-medium text-sm">👎 Negative</div>
+                </div>
+                
+                <div className="text-center group">
+                  <div className="relative mb-2">
+                    <div className="absolute inset-0 bg-white rounded-full blur-lg opacity-20 group-hover:opacity-30 transition-opacity"></div>
+                    <div className="relative text-2xl sm:text-3xl font-black text-white bg-black/80 rounded-full w-12 h-12 sm:w-16 sm:h-16 flex items-center justify-center mx-auto border border-white/30">
+                      {feedbackStats.negativeExamplesStored}
+                    </div>
+                  </div>
+                  <div className="text-gray-400 font-medium text-sm">📊 Stored Examples</div>
+                </div>
+              </div>
+              
+              <div className="mt-4 sm:mt-6 text-center">
+                <div className="inline-flex items-center gap-2 bg-white/10 rounded-full px-3 sm:px-4 py-2 border border-white/20">
+                  <Sparkles className="w-3 h-3 sm:w-4 sm:h-4 text-white" />
+                  <span className="text-xs sm:text-sm text-gray-300 font-medium">
+                    Every interaction improves our AI matching accuracy
                   </span>
-                  <Brain className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
-                </div>
-                
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-xs sm:text-sm">
-                  <div className="bg-white/10 rounded-lg sm:rounded-xl p-3 sm:p-4 border border-white/20">
-                    <div className="flex items-center gap-2 mb-2">
-                      <Database className="w-3 h-3 sm:w-4 sm:h-4 text-white" />
-                      <span className="font-semibold text-white">Training Dataset</span>
-                    </div>
-                    <p className="text-gray-400 mb-1 sm:mb-2">• 772+ synthetic training videos</p>
-                    <p className="text-gray-400 mb-1 sm:mb-2">• Advanced embedding vectors</p>
-                    <p className="text-gray-400">• Pattern recognition training</p>
-                  </div>
-                  
-                  <div className="bg-white/10 rounded-lg sm:rounded-xl p-3 sm:p-4 border border-white/20">
-                    <div className="flex items-center gap-2 mb-2">
-                      <Youtube className="w-3 h-3 sm:w-4 sm:h-4 text-white" />
-                      <span className="font-semibold text-white">Live Analysis</span>
-                    </div>
-                    <p className="text-gray-400 mb-1 sm:mb-2">• Real-time creator data</p>
-                    <p className="text-gray-400 mb-1 sm:mb-2">• YouTube API integration</p>
-                    <p className="text-gray-400">• Dynamic content matching</p>
-                  </div>
-                  
-                  <div className="bg-white/10 rounded-lg sm:rounded-xl p-3 sm:p-4 border border-white/20">
-                    <div className="flex items-center gap-2 mb-2">
-                      <TrendingUp className="w-3 h-3 sm:w-4 sm:h-4 text-white" />
-                      <span className="font-semibold text-white">Smart Learning</span>
-                    </div>
-                    <p className="text-gray-400 mb-1 sm:mb-2">• User feedback integration</p>
-                    <p className="text-gray-400 mb-1 sm:mb-2">• Continuous improvement</p>
-                    <p className="text-gray-400">• Negative example storage</p>
-                  </div>
-                </div>
-                
-                <div className="bg-white/10 rounded-lg sm:rounded-xl p-3 sm:p-4 mt-4 border border-white/20">
-                  <p className="text-center text-gray-300 text-xs sm:text-sm">
-                    <span className="font-semibold text-white">🧠 Workflow:</span> 
-                    Input Video → Creator Analysis → AI Pattern Matching → Series Discovery → Continuous Learning
-                  </p>
                 </div>
               </div>
             </div>
+          )}
 
-            {/* Enhanced Feedback Statistics Dashboard */}
-            {feedbackStats.totalFeedback > 0 && (
-              <div className="bg-white/5 backdrop-blur-xl rounded-xl sm:rounded-2xl p-4 sm:p-6 max-w-3xl mx-auto mb-12 sm:mb-16 border border-white/10 shadow-2xl">
-                <div className="flex items-center justify-center gap-3 mb-4 sm:mb-6">
-                  <div className="p-2 bg-white rounded-lg">
-                    <TrendingUp className="w-5 h-5 sm:w-6 sm:h-6 text-black" />
+          {/* Enhanced Search Form */}
+          <div className="max-w-3xl mx-auto mb-12 sm:mb-16">
+            <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-6">
+              <div className="relative group">
+                <div className="absolute inset-0 bg-white rounded-xl sm:rounded-2xl blur-lg opacity-10 group-hover:opacity-20 transition-opacity"></div>
+                <div className="relative">
+                  <div className="absolute inset-y-0 left-0 pl-4 sm:pl-6 flex items-center pointer-events-none">
+                    <Youtube className="h-5 w-5 sm:h-6 sm:w-6 text-gray-400" />
                   </div>
-                  <h3 className="text-xl sm:text-2xl font-bold text-white">Learning Progress</h3>
-                </div>
-                
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6">
-                  <div className="text-center group">
-                    <div className="relative mb-2">
-                      <div className="absolute inset-0 bg-white rounded-full blur-lg opacity-20 group-hover:opacity-30 transition-opacity"></div>
-                      <div className="relative text-2xl sm:text-3xl font-black text-white bg-black/80 rounded-full w-12 h-12 sm:w-16 sm:h-16 flex items-center justify-center mx-auto border border-white/30">
-                        {feedbackStats.totalFeedback}
-                      </div>
-                    </div>
-                    <div className="text-gray-400 font-medium text-sm">Total Feedback</div>
-                  </div>
-                  
-                  <div className="text-center group">
-                    <div className="relative mb-2">
-                      <div className="absolute inset-0 bg-white rounded-full blur-lg opacity-20 group-hover:opacity-30 transition-opacity"></div>
-                      <div className="relative text-2xl sm:text-3xl font-black text-white bg-black/80 rounded-full w-12 h-12 sm:w-16 sm:h-16 flex items-center justify-center mx-auto border border-white/30">
-                        {feedbackStats.thumbsUp}
-                      </div>
-                    </div>
-                    <div className="text-gray-400 font-medium text-sm">👍 Positive</div>
-                  </div>
-                  
-                  <div className="text-center group">
-                    <div className="relative mb-2">
-                      <div className="absolute inset-0 bg-white rounded-full blur-lg opacity-20 group-hover:opacity-30 transition-opacity"></div>
-                      <div className="relative text-2xl sm:text-3xl font-black text-white bg-black/80 rounded-full w-12 h-12 sm:w-16 sm:h-16 flex items-center justify-center mx-auto border border-white/30">
-                        {feedbackStats.thumbsDown}
-                      </div>
-                    </div>
-                    <div className="text-gray-400 font-medium text-sm">👎 Negative</div>
-                  </div>
-                  
-                  <div className="text-center group">
-                    <div className="relative mb-2">
-                      <div className="absolute inset-0 bg-white rounded-full blur-lg opacity-20 group-hover:opacity-30 transition-opacity"></div>
-                      <div className="relative text-2xl sm:text-3xl font-black text-white bg-black/80 rounded-full w-12 h-12 sm:w-16 sm:h-16 flex items-center justify-center mx-auto border border-white/30">
-                        {feedbackStats.negativeExamplesStored}
-                      </div>
-                    </div>
-                    <div className="text-gray-400 font-medium text-sm">📊 Stored Examples</div>
-                  </div>
-                </div>
-                
-                <div className="mt-4 sm:mt-6 text-center">
-                  <div className="inline-flex items-center gap-2 bg-white/10 rounded-full px-3 sm:px-4 py-2 border border-white/20">
-                    <Sparkles className="w-3 h-3 sm:w-4 sm:h-4 text-white" />
-                    <span className="text-xs sm:text-sm text-gray-300 font-medium">
-                      Every interaction improves our AI matching accuracy
-                    </span>
-                  </div>
+                  <input
+                    type="url"
+                    value={url}
+                    onChange={(e) => setUrl(e.target.value)}
+                    placeholder="Paste YouTube URL here (e.g., youtube.com/shorts/...)"
+                    className="w-full pl-12 sm:pl-16 pr-4 sm:pr-6 py-4 sm:py-6 bg-white/5 backdrop-blur-xl border border-white/20 rounded-xl sm:rounded-2xl text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-white focus:border-transparent transition-all duration-300 text-base sm:text-lg shadow-2xl"
+                    disabled={loading}
+                  />
                 </div>
               </div>
-            )}
+              
+              <div className="flex gap-3 sm:gap-4">
+                <button
+                  type="submit"
+                  disabled={loading}
+                  className="flex-1 relative group overflow-hidden bg-white text-black py-4 sm:py-6 px-6 sm:px-8 rounded-xl sm:rounded-2xl font-bold text-base sm:text-lg hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-black transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 sm:gap-3 shadow-2xl"
+                >
+                  <div className="absolute inset-0 bg-gradient-to-r from-black/0 via-black/10 to-black/0 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000"></div>
+                  {loading ? (
+                    <>
+                      <div className="w-5 h-5 sm:w-6 sm:h-6 border-2 border-black border-t-transparent rounded-full animate-spin"></div>
+                      <span className="hidden sm:inline">Analyzing Creator's Content...</span>
+                      <span className="sm:hidden">Analyzing...</span>
+                    </>
+                  ) : (
+                    <>
+                      <Search className="w-5 h-5 sm:w-6 sm:h-6" />
+                      <span className="hidden sm:inline">Find Series Videos</span>
+                      <span className="sm:hidden">Find Videos</span>
+                      <Sparkles className="w-4 h-4 sm:w-5 sm:h-5" />
+                    </>
+                  )}
+                </button>
+                
+                {seriesVideos.length > 0 && (
+                  <button
+                    type="button"
+                    onClick={clearResults}
+                    className="px-6 sm:px-8 py-4 sm:py-6 bg-white/10 backdrop-blur-xl border border-white/20 text-white rounded-xl sm:rounded-2xl hover:bg-white/20 transition-all duration-300 font-medium shadow-xl"
+                  >
+                    Clear
+                  </button>
+                )}
+              </div>
+            </form>
+          </div>
 
+          {/* Enhanced Error Message */}
+          {error && (
+            <div className="max-w-3xl mx-auto mb-8 sm:mb-12">
+              <div className="bg-white/10 backdrop-blur-xl border border-white/30 rounded-xl sm:rounded-2xl p-4 sm:p-6 flex items-center gap-3 sm:gap-4 shadow-2xl">
+                <div className="p-2 bg-white/20 rounded-full">
+                  <AlertCircle className="w-5 h-5 sm:w-6 sm:h-6 text-white flex-shrink-0" />
+                </div>
+                <p className="text-gray-300 text-base sm:text-lg">{error}</p>
+              </div>
+            </div>
+          )}
+
+          {/* Enhanced Results */}
+          {seriesVideos.length > 0 && originalVideo && (
             <div className="max-w-6xl mx-auto">
               <div className="bg-white/5 backdrop-blur-xl rounded-2xl sm:rounded-3xl p-6 sm:p-8 border border-white/10 mb-8 sm:mb-12 shadow-2xl">
                 <div className="flex items-center gap-3 sm:gap-4 mb-4 sm:mb-6">
@@ -896,36 +812,52 @@ One app for all your short-form series needs.
                 ))}
               </div>
             </div>
+          )}
 
-            {/* Enhanced Footer */}
-            <div className="text-center mt-16 sm:mt-20 pt-8 sm:pt-12 border-t border-white/20">
-              <div className="flex flex-wrap items-center justify-center gap-2 sm:gap-3 mb-3 sm:mb-4">
-                <div className="flex items-center gap-1 sm:gap-2">
-                  <div className="w-2 h-2 sm:w-3 sm:h-3 bg-white rounded-full animate-pulse"></div>
-                  <span className="text-gray-500 text-xs sm:text-sm">Live Creator Data</span>
-                </div>
-                <div className="w-1 h-1 bg-gray-600 rounded-full"></div>
-                <div className="flex items-center gap-1 sm:gap-2">
-                  <Brain className="w-3 h-3 sm:w-4 sm:h-4 text-white" />
-                  <span className="text-gray-500 text-xs sm:text-sm">AI-Trained Logic</span>
-                </div>
-                <div className="w-1 h-1 bg-gray-600 rounded-full"></div>
-                <div className="flex items-center gap-1 sm:gap-2">
-                  <Database className="w-3 h-3 sm:w-4 sm:h-4 text-white" />
-                  <span className="text-gray-500 text-xs sm:text-sm">Synthetic Dataset</span>
-                </div>
-                <div className="w-1 h-1 bg-gray-600 rounded-full"></div>
-                <div className="flex items-center gap-1 sm:gap-2">
-                  <TrendingUp className="w-3 h-3 sm:w-4 sm:h-4 text-white" />
-                  <span className="text-gray-500 text-xs sm:text-sm">Smart Learning</span>
-                </div>
+          {/* Enhanced Footer */}
+          <div className="text-center mt-16 sm:mt-20 pt-8 sm:pt-12 border-t border-white/20">
+            <div className="flex flex-wrap items-center justify-center gap-2 sm:gap-3 mb-3 sm:mb-4">
+              <div className="flex items-center gap-1 sm:gap-2">
+                <div className="w-2 h-2 sm:w-3 sm:h-3 bg-white rounded-full animate-pulse"></div>
+                <span className="text-gray-500 text-xs sm:text-sm">Live Creator Data</span>
               </div>
-              <p className="text-gray-600 text-xs sm:text-sm">
-                Powered by advanced AI semantic matching and continuous learning
-              </p>
+              <div className="w-1 h-1 bg-gray-600 rounded-full"></div>
+              <div className="flex items-center gap-1 sm:gap-2">
+                <Brain className="w-3 h-3 sm:w-4 sm:h-4 text-white" />
+                <span className="text-gray-500 text-xs sm:text-sm">AI-Trained Logic</span>
+              </div>
+              <div className="w-1 h-1 bg-gray-600 rounded-full"></div>
+              <div className="flex items-center gap-1 sm:gap-2">
+                <Database className="w-3 h-3 sm:w-4 sm:h-4 text-white" />
+                <span className="text-gray-500 text-xs sm:text-sm">Synthetic Dataset</span>
+              </div>
+              <div className="w-1 h-1 bg-gray-600 rounded-full"></div>
+              <div className="flex items-center gap-1 sm:gap-2">
+                <TrendingUp className="w-3 h-3 sm:w-4 sm:h-4 text-white" />
+                <span className="text-gray-500 text-xs sm:text-sm">Smart Learning</span>
+              </div>
             </div>
-          </section>
-        )}
+            <p className="text-gray-600 text-xs sm:text-sm mb-4">
+              Powered by advanced AI semantic matching and continuous learning
+            </p>
+            
+            {/* Built in Bolt Badge */}
+            <div className="flex justify-center">
+              <a 
+                href="https://bolt.new" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="inline-block hover:scale-105 transition-transform duration-300"
+              >
+                <img 
+                  src="https://img.shields.io/badge/Built%20in-Bolt-FF6B35?style=for-the-badge&logo=lightning&logoColor=white" 
+                  alt="Built in Bolt" 
+                  className="h-8"
+                />
+              </a>
+            </div>
+          </div>
+        </section>
       </div>
 
       <style jsx>{`
