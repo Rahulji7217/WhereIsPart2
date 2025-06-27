@@ -100,10 +100,10 @@ function App() {
     setFeedbackCount(0);
   };
 
-  const scrollToSearch = () => {
-    const searchSection = document.getElementById('search-section');
-    if (searchSection) {
-      searchSection.scrollIntoView({ behavior: 'smooth' });
+  const scrollToResults = () => {
+    const resultsSection = document.getElementById('results-section');
+    if (resultsSection) {
+      resultsSection.scrollIntoView({ behavior: 'smooth' });
     }
   };
 
@@ -208,9 +208,9 @@ function App() {
               </div>
 
               {/* Call-to-Action */}
-              <div className="flex flex-col items-center gap-6 sm:gap-8">
+              <div className="flex flex-col items-center gap-6 sm:gap-8 mb-12 sm:mb-16">
                 <button
-                  onClick={scrollToSearch}
+                  onClick={scrollToResults}
                   className="group relative overflow-hidden bg-white text-black px-8 sm:px-12 py-4 sm:py-6 rounded-xl sm:rounded-2xl font-bold text-lg sm:text-xl hover:bg-gray-100 focus:outline-none focus:ring-4 focus:ring-white focus:ring-offset-2 focus:ring-offset-black transition-all duration-300 flex items-center gap-3 sm:gap-4 shadow-2xl hover:shadow-white/25 hover:scale-105"
                 >
                   <div className="absolute inset-0 bg-gradient-to-r from-black/0 via-black/10 to-black/0 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000"></div>
@@ -226,6 +226,74 @@ function App() {
                   </span>
                   <ArrowDown className="relative w-5 h-5 sm:w-6 sm:h-6 group-hover:translate-y-1 transition-transform" />
                 </button>
+
+                {/* Search Form - Moved here from below */}
+                <div className="w-full max-w-3xl">
+                  <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-6">
+                    <div className="relative group">
+                      <div className="absolute inset-0 bg-white rounded-xl sm:rounded-2xl blur-lg opacity-10 group-hover:opacity-20 transition-opacity"></div>
+                      <div className="relative">
+                        <div className="absolute inset-y-0 left-0 pl-4 sm:pl-6 flex items-center pointer-events-none">
+                          <Youtube className="h-5 w-5 sm:h-6 sm:w-6 text-gray-400" />
+                        </div>
+                        <input
+                          type="url"
+                          value={url}
+                          onChange={(e) => setUrl(e.target.value)}
+                          placeholder="Paste YouTube URL here (e.g., youtube.com/shorts/...)"
+                          className="w-full pl-12 sm:pl-16 pr-4 sm:pr-6 py-4 sm:py-6 bg-white/5 backdrop-blur-xl border border-white/20 rounded-xl sm:rounded-2xl text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-white focus:border-transparent transition-all duration-300 text-base sm:text-lg shadow-2xl"
+                          disabled={loading}
+                        />
+                      </div>
+                    </div>
+                    
+                    <div className="flex gap-3 sm:gap-4">
+                      <button
+                        type="submit"
+                        disabled={loading}
+                        className="flex-1 relative group overflow-hidden bg-white text-black py-4 sm:py-6 px-6 sm:px-8 rounded-xl sm:rounded-2xl font-bold text-base sm:text-lg hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-black transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 sm:gap-3 shadow-2xl"
+                      >
+                        <div className="absolute inset-0 bg-gradient-to-r from-black/0 via-black/10 to-black/0 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000"></div>
+                        {loading ? (
+                          <>
+                            <div className="w-5 h-5 sm:w-6 sm:h-6 border-2 border-black border-t-transparent rounded-full animate-spin"></div>
+                            <span className="hidden sm:inline">Analyzing Creator's Content...</span>
+                            <span className="sm:hidden">Analyzing...</span>
+                          </>
+                        ) : (
+                          <>
+                            <Search className="w-5 h-5 sm:w-6 sm:h-6" />
+                            <span className="hidden sm:inline">Find Series Videos</span>
+                            <span className="sm:hidden">Find Videos</span>
+                            <Sparkles className="w-4 h-4 sm:w-5 sm:h-5" />
+                          </>
+                        )}
+                      </button>
+                      
+                      {seriesVideos.length > 0 && (
+                        <button
+                          type="button"
+                          onClick={clearResults}
+                          className="px-6 sm:px-8 py-4 sm:py-6 bg-white/10 backdrop-blur-xl border border-white/20 text-white rounded-xl sm:rounded-2xl hover:bg-white/20 transition-all duration-300 font-medium shadow-xl"
+                        >
+                          Clear
+                        </button>
+                      )}
+                    </div>
+                  </form>
+
+                  {/* Error Message */}
+                  {error && (
+                    <div className="mt-6">
+                      <div className="bg-white/10 backdrop-blur-xl border border-white/30 rounded-xl sm:rounded-2xl p-4 sm:p-6 flex items-center gap-3 sm:gap-4 shadow-2xl">
+                        <div className="p-2 bg-white/20 rounded-full">
+                          <AlertCircle className="w-5 h-5 sm:w-6 sm:h-6 text-white flex-shrink-0" />
+                        </div>
+                        <p className="text-gray-300 text-base sm:text-lg">{error}</p>
+                      </div>
+                    </div>
+                  )}
+                </div>
 
                 {/* Scroll Indicator */}
                 <div className="flex flex-col items-center gap-2 animate-bounce">
@@ -290,8 +358,9 @@ function App() {
                       encryptedClassName="text-gray-400 opacity-70"
                     />
                   </h3>
+                  </div>
+                  <p className="text-sm sm:text-base text-gray-400 leading-relaxed">Continuous improvement through user feedback and negative example storage.</p>
                 </div>
-                <p className="text-sm sm:text-base text-gray-400 leading-relaxed">Continuous improvement through user feedback and negative example storage.</p>
               </div>
             </div>
           </div>
@@ -524,7 +593,7 @@ Uncover spin-offs even the creator forgot they made.
                   <p className="text-sm text-gray-400">Join thousands who never miss a part 2 again</p>
                 </div>
                 <button
-                  onClick={scrollToSearch}
+                  onClick={scrollToResults}
                   className="bg-white text-black px-6 py-3 rounded-xl font-semibold hover:bg-gray-100 transition-all duration-300 hover:scale-105 shadow-lg"
                 >
                   Try It Now
@@ -534,8 +603,8 @@ Uncover spin-offs even the creator forgot they made.
           </div>
         </section>
 
-        {/* Search Section */}
-        <section id="search-section" className="container mx-auto px-4 sm:px-6 py-8 sm:py-12">
+        {/* Results Section */}
+        <section id="results-section" className="container mx-auto px-4 sm:px-6 py-8 sm:py-12">
           {/* Enhanced Architecture Display */}
           <div className="bg-white/5 backdrop-blur-xl rounded-xl sm:rounded-2xl p-4 sm:p-6 max-w-5xl mx-auto border border-white/10 shadow-2xl mb-12 sm:mb-16">
             <div className="text-sm text-gray-300 space-y-4">
@@ -654,74 +723,6 @@ Uncover spin-offs even the creator forgot they made.
                     Every interaction improves our AI matching accuracy
                   </span>
                 </div>
-              </div>
-            </div>
-          )}
-
-          {/* Enhanced Search Form */}
-          <div className="max-w-3xl mx-auto mb-12 sm:mb-16">
-            <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-6">
-              <div className="relative group">
-                <div className="absolute inset-0 bg-white rounded-xl sm:rounded-2xl blur-lg opacity-10 group-hover:opacity-20 transition-opacity"></div>
-                <div className="relative">
-                  <div className="absolute inset-y-0 left-0 pl-4 sm:pl-6 flex items-center pointer-events-none">
-                    <Youtube className="h-5 w-5 sm:h-6 sm:w-6 text-gray-400" />
-                  </div>
-                  <input
-                    type="url"
-                    value={url}
-                    onChange={(e) => setUrl(e.target.value)}
-                    placeholder="Paste YouTube URL here (e.g., youtube.com/shorts/...)"
-                    className="w-full pl-12 sm:pl-16 pr-4 sm:pr-6 py-4 sm:py-6 bg-white/5 backdrop-blur-xl border border-white/20 rounded-xl sm:rounded-2xl text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-white focus:border-transparent transition-all duration-300 text-base sm:text-lg shadow-2xl"
-                    disabled={loading}
-                  />
-                </div>
-              </div>
-              
-              <div className="flex gap-3 sm:gap-4">
-                <button
-                  type="submit"
-                  disabled={loading}
-                  className="flex-1 relative group overflow-hidden bg-white text-black py-4 sm:py-6 px-6 sm:px-8 rounded-xl sm:rounded-2xl font-bold text-base sm:text-lg hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-black transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 sm:gap-3 shadow-2xl"
-                >
-                  <div className="absolute inset-0 bg-gradient-to-r from-black/0 via-black/10 to-black/0 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000"></div>
-                  {loading ? (
-                    <>
-                      <div className="w-5 h-5 sm:w-6 sm:h-6 border-2 border-black border-t-transparent rounded-full animate-spin"></div>
-                      <span className="hidden sm:inline">Analyzing Creator's Content...</span>
-                      <span className="sm:hidden">Analyzing...</span>
-                    </>
-                  ) : (
-                    <>
-                      <Search className="w-5 h-5 sm:w-6 sm:h-6" />
-                      <span className="hidden sm:inline">Find Series Videos</span>
-                      <span className="sm:hidden">Find Videos</span>
-                      <Sparkles className="w-4 h-4 sm:w-5 sm:h-5" />
-                    </>
-                  )}
-                </button>
-                
-                {seriesVideos.length > 0 && (
-                  <button
-                    type="button"
-                    onClick={clearResults}
-                    className="px-6 sm:px-8 py-4 sm:py-6 bg-white/10 backdrop-blur-xl border border-white/20 text-white rounded-xl sm:rounded-2xl hover:bg-white/20 transition-all duration-300 font-medium shadow-xl"
-                  >
-                    Clear
-                  </button>
-                )}
-              </div>
-            </form>
-          </div>
-
-          {/* Enhanced Error Message */}
-          {error && (
-            <div className="max-w-3xl mx-auto mb-8 sm:mb-12">
-              <div className="bg-white/10 backdrop-blur-xl border border-white/30 rounded-xl sm:rounded-2xl p-4 sm:p-6 flex items-center gap-3 sm:gap-4 shadow-2xl">
-                <div className="p-2 bg-white/20 rounded-full">
-                  <AlertCircle className="w-5 h-5 sm:w-6 sm:h-6 text-white flex-shrink-0" />
-                </div>
-                <p className="text-gray-300 text-base sm:text-lg">{error}</p>
               </div>
             </div>
           )}
