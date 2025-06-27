@@ -360,9 +360,6 @@ function App() {
                   </h3>
                   </div>
                   <p className="text-sm sm:text-base text-gray-400 leading-relaxed">Continuous improvement through user feedback and negative example storage.</p>
-                </div>
-              </div>
-            </div>
           </div>
         </section>
 
