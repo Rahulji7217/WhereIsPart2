@@ -1,5 +1,9 @@
 # WhereIsPart2 - AI-Powered YouTube Series Discovery
 
+[![Built in Bolt](https://img.shields.io/badge/Built%20in-Bolt-FF6B35?style=for-the-badge&logo=lightning&logoColor=white)](https://bolt.new)
+[![Netlify Status](https://api.netlify.com/api/v1/badges/placeholder/deploy-status)](https://app.netlify.com/sites/placeholder/deploys)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg?style=for-the-badge)](https://opensource.org/licenses/MIT)
+
 Turn scrolling into a story. Find the complete YouTube series you've been looking for with advanced AI matching.
 
 ## 🚀 Features
@@ -19,6 +23,7 @@ Turn scrolling into a story. Find the complete YouTube series you've been lookin
 - **AI/ML**: Hugging Face Transformers API
 - **APIs**: YouTube Data API v3
 - **Graphics**: WebGL (OGL) + Custom Shaders
+- **Built with**: [Bolt](https://bolt.new) - AI-powered full-stack development
 
 ## 🔧 Setup Instructions
 
@@ -156,6 +161,7 @@ MIT License - see LICENSE file for details
 
 ## 🙏 Acknowledgments
 
+- [Bolt](https://bolt.new) for AI-powered development experience
 - YouTube Data API for video information
 - Hugging Face for transformer models
 - Supabase for database infrastructure
@@ -164,4 +170,4 @@ MIT License - see LICENSE file for details
 
 ---
 
-**Built with ❤️ for the YouTube community**
+**Built with ❤️ and ⚡ [Bolt](https://bolt.new) for the YouTube community**
