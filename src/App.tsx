@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Search, Youtube, AlertCircle, CheckCircle2, Brain, Database, Zap, Target, TrendingUp, Play, Sparkles, Star, ArrowDown, ChevronDown, Clock, Shield, Infinity, Heart, Rocket, Award } from 'lucide-react';
+import { Search, Youtube, AlertCircle, CheckCircle2, Brain, Database, Zap, Target, TrendingUp, Play, Sparkles, Star, ArrowDown, ChevronDown, Clock, Shield, Infinity, Heart, Rocket, Award, Instagram } from 'lucide-react';
 import { YouTubeVideo } from './types/youtube';
 import { findSeriesVideos, getFeedbackStats } from './utils/seriesFinder';
 import { VideoCard } from './components/VideoCard';
@@ -14,6 +14,7 @@ function App() {
   const [seriesVideos, setSeriesVideos] = useState<YouTubeVideo[]>([]);
   const [originalVideo, setOriginalVideo] = useState<YouTubeVideo | null>(null);
   const [feedbackCount, setFeedbackCount] = useState(0);
+  const [selectedPlatform, setSelectedPlatform] = useState<'youtube' | 'instagram' | 'tiktok'>('youtube');
   const [feedbackStats, setFeedbackStats] = useState({
     totalFeedback: 0,
     thumbsUp: 0,
@@ -37,6 +38,11 @@ function App() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    if (selectedPlatform !== 'youtube') {
+      setError(`${selectedPlatform === 'instagram' ? 'Instagram Reels' : 'TikTok'} support is coming soon! Currently only YouTube is supported.`);
+      return;
+    }
     
     if (!url.trim()) {
       setError('Please enter a YouTube URL');
@@ -106,6 +112,35 @@ function App() {
       searchSection.scrollIntoView({ behavior: 'smooth' });
     }
   };
+
+  const platforms = [
+    {
+      id: 'youtube' as const,
+      name: 'YouTube',
+      icon: Youtube,
+      placeholder: 'Paste YouTube URL here (e.g., youtube.com/shorts/...)',
+      available: true,
+      color: 'text-red-500'
+    },
+    {
+      id: 'instagram' as const,
+      name: 'Instagram Reels',
+      icon: Instagram,
+      placeholder: 'Instagram Reels support coming soon...',
+      available: false,
+      color: 'text-pink-500'
+    },
+    {
+      id: 'tiktok' as const,
+      name: 'TikTok',
+      icon: Play,
+      placeholder: 'TikTok support coming soon...',
+      available: false,
+      color: 'text-purple-500'
+    }
+  ];
+
+  const currentPlatform = platforms.find(p => p.id === selectedPlatform)!;
 
   return (
     <div className="min-h-screen bg-black relative overflow-hidden font-sans">
@@ -229,20 +264,64 @@ function App() {
 
                 {/* Search Form - Moved here from separate section */}
                 <div id="search-section" className="w-full max-w-3xl">
+                  {/* Platform Selector */}
+                  <div className="mb-6">
+                    <div className="flex items-center justify-center gap-2 mb-4">
+                      <span className="text-gray-400 text-sm font-medium">Choose Platform:</span>
+                    </div>
+                    <div className="flex items-center justify-center gap-2 sm:gap-4">
+                      {platforms.map((platform) => {
+                        const Icon = platform.icon;
+                        return (
+                          <button
+                            key={platform.id}
+                            onClick={() => setSelectedPlatform(platform.id)}
+                            disabled={!platform.available}
+                            className={`relative group flex items-center gap-2 sm:gap-3 px-4 sm:px-6 py-3 sm:py-4 rounded-xl sm:rounded-2xl font-semibold transition-all duration-300 border ${
+                              selectedPlatform === platform.id
+                                ? 'bg-white text-black border-white shadow-lg'
+                                : platform.available
+                                ? 'bg-white/10 text-white border-white/20 hover:bg-white/20'
+                                : 'bg-white/5 text-gray-500 border-white/10 cursor-not-allowed'
+                            }`}
+                          >
+                            <Icon className={`w-4 h-4 sm:w-5 sm:h-5 ${
+                              selectedPlatform === platform.id 
+                                ? 'text-black' 
+                                : platform.available 
+                                ? platform.color 
+                                : 'text-gray-600'
+                            }`} />
+                            <span className="text-sm sm:text-base">{platform.name}</span>
+                            {!platform.available && (
+                              <span className="absolute -top-2 -right-2 bg-yellow-500 text-black text-xs px-2 py-1 rounded-full font-bold">
+                                Soon
+                              </span>
+                            )}
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </div>
+
                   <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-6">
                     <div className="relative group">
                       <div className="absolute inset-0 bg-white rounded-xl sm:rounded-2xl blur-lg opacity-10 group-hover:opacity-20 transition-opacity"></div>
                       <div className="relative">
                         <div className="absolute inset-y-0 left-0 pl-4 sm:pl-6 flex items-center pointer-events-none">
-                          <Youtube className="h-5 w-5 sm:h-6 sm:w-6 text-gray-400" />
+                          <currentPlatform.icon className={`h-5 w-5 sm:h-6 sm:w-6 ${
+                            currentPlatform.available ? 'text-gray-400' : 'text-gray-600'
+                          }`} />
                         </div>
                         <input
                           type="url"
                           value={url}
                           onChange={(e) => setUrl(e.target.value)}
-                          placeholder="Paste YouTube URL here (e.g., youtube.com/shorts/...)"
-                          className="w-full pl-12 sm:pl-16 pr-4 sm:pr-6 py-4 sm:py-6 bg-white/5 backdrop-blur-xl border border-white/20 rounded-xl sm:rounded-2xl text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-white focus:border-transparent transition-all duration-300 text-base sm:text-lg shadow-2xl"
-                          disabled={loading}
+                          placeholder={currentPlatform.placeholder}
+                          disabled={!currentPlatform.available || loading}
+                          className={`w-full pl-12 sm:pl-16 pr-4 sm:pr-6 py-4 sm:py-6 bg-white/5 backdrop-blur-xl border border-white/20 rounded-xl sm:rounded-2xl text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-white focus:border-transparent transition-all duration-300 text-base sm:text-lg shadow-2xl ${
+                            !currentPlatform.available ? 'cursor-not-allowed opacity-50' : ''
+                          }`}
                         />
                       </div>
                     </div>
@@ -250,7 +329,7 @@ function App() {
                     <div className="flex gap-3 sm:gap-4">
                       <button
                         type="submit"
-                        disabled={loading}
+                        disabled={loading || !currentPlatform.available}
                         className="flex-1 relative group overflow-hidden bg-white text-black py-4 sm:py-6 px-6 sm:px-8 rounded-xl sm:rounded-2xl font-bold text-base sm:text-lg hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-black transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 sm:gap-3 shadow-2xl"
                       >
                         <div className="absolute inset-0 bg-gradient-to-r from-black/0 via-black/10 to-black/0 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000"></div>
@@ -263,8 +342,12 @@ function App() {
                         ) : (
                           <>
                             <Search className="w-5 h-5 sm:w-6 sm:h-6" />
-                            <span className="hidden sm:inline">Find Series Videos</span>
-                            <span className="sm:hidden">Find Videos</span>
+                            <span className="hidden sm:inline">
+                              {currentPlatform.available ? 'Find Series Videos' : `${currentPlatform.name} Coming Soon`}
+                            </span>
+                            <span className="sm:hidden">
+                              {currentPlatform.available ? 'Find Videos' : 'Coming Soon'}
+                            </span>
                             <Sparkles className="w-4 h-4 sm:w-5 sm:h-5" />
                           </>
                         )}
@@ -352,7 +435,7 @@ function App() {
                   </div>
                   <h3 className="text-lg sm:text-xl font-bold text-white">
                     <DecryptedText 
-                      text="Smart Learning"
+                      text="Multi-Platform"
                       animateOn="hover"
                       speed={80}
                       maxIterations={8}
@@ -361,7 +444,7 @@ function App() {
                     />
                   </h3>
                 </div>
-                <p className="text-sm sm:text-base text-gray-400 leading-relaxed">Continuous improvement through user feedback and negative example storage.</p>
+                <p className="text-sm sm:text-base text-gray-400 leading-relaxed">YouTube available now. Instagram Reels and TikTok support coming soon!</p>
               </div>
             </div>
           </div>
@@ -552,7 +635,7 @@ Smarter than YouTube's 'Up next'.
                 </div>
               </div>
 
-              {/* Benefit 6: Discover Hidden Gems */}
+              {/* Benefit 6: Multi-Platform Support */}
               <div className="group relative bg-white/5 backdrop-blur-xl rounded-2xl p-8 border border-white/10 hover:bg-white/10 transition-all duration-500 hover:scale-105 hover:shadow-2xl hover:shadow-white/10">
                 <div className="absolute inset-0 bg-white/5 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
                 <div className="relative">
@@ -562,7 +645,7 @@ Smarter than YouTube's 'Up next'.
                     </div>
                     <h3 className="text-xl sm:text-2xl font-bold text-white">
                       <DecryptedText 
-                        text="Discover Hidden Gems"
+                        text="Multi-Platform Ready"
                         animateOn="hover"
                         speed={60}
                         maxIterations={10}
@@ -572,12 +655,12 @@ Smarter than YouTube's 'Up next'.
                     </h3>
                   </div>
                   <p className="text-gray-400 leading-relaxed mb-4">
-                   For when Part 1 is from 2 years ago, and YouTube forgot it.
-Uncover spin-offs even the creator forgot they made.
+                   YouTube works now. Instagram Reels and TikTok coming soon.
+One app for all your short-form series needs.
                   </p>
                   <div className="flex items-center gap-2 text-sm text-gray-500">
                     <CheckCircle2 className="w-4 h-4" />
-                    <span>Comprehensive discovery</span>
+                    <span>Expanding platform support</span>
                   </div>
                 </div>
               </div>
