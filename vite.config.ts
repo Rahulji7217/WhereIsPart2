@@ -7,4 +7,22 @@ export default defineConfig({
   optimizeDeps: {
     exclude: ['lucide-react'],
   },
+  build: {
+    outDir: 'dist',
+    sourcemap: false,
+    minify: 'terser',
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          vendor: ['react', 'react-dom'],
+          ui: ['lucide-react', 'framer-motion'],
+          utils: ['@supabase/supabase-js']
+        }
+      }
+    }
+  },
+  define: {
+    // Ensure environment variables are available at build time
+    'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV || 'production')
+  }
 });
