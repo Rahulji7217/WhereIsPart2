@@ -395,6 +395,8 @@ function App() {
                 />
               </p>
             </div>
+            </div>
+        </section>
 
             {/* Benefits Grid */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 sm:gap-10">
