@@ -229,7 +229,7 @@ function App() {
 
                 {/* Scroll Indicator */}
                 <div className="flex flex-col items-center gap-2 animate-bounce">
-                  <span className="text-gray-500 text-sm font-medium">Look Down Bitch</span>
+                  <span className="text-gray-500 text-sm font-medium">Scroll Down</span>
                   <ChevronDown className="w-5 h-5 sm:w-6 sm:h-6 text-gray-100" />
                 </div>
               </div>
