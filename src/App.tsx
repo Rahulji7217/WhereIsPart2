@@ -103,7 +103,7 @@ function App() {
   const scrollToSearch = () => {
     const searchSection = document.getElementById('search-section');
     if (searchSection) {
-      searchSection.scrollIntoView({ behavior: 'smooth' });
+      searchSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
   };
 
