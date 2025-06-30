@@ -229,7 +229,7 @@ function App() {
 
                 {/* Scroll Indicator */}
                 <div className="flex flex-col items-center gap-2 animate-bounce">
-                  <span className="text-gray-500 text-sm font-medium">Scroll Down</span>
+                  <span className="text-gray-500 text-sm font-medium">Look Down Bitch</span>
                   <ChevronDown className="w-5 h-5 sm:w-6 sm:h-6 text-gray-100" />
                 </div>
               </div>
@@ -595,6 +595,64 @@ Uncover spin-offs even the creator forgot they made.
             </div>
           </div>
 
+          {/* Enhanced Search Form - MOVED TO CENTER */}
+          <div className="max-w-3xl mx-auto mb-12 sm:mb-16 flex items-center justify-center min-h-[40vh]">
+            <div className="w-full">
+              <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-6">
+                <div className="relative group">
+                  <div className="absolute inset-0 bg-white rounded-xl sm:rounded-2xl blur-lg opacity-10 group-hover:opacity-20 transition-opacity"></div>
+                  <div className="relative">
+                    <div className="absolute inset-y-0 left-0 pl-4 sm:pl-6 flex items-center pointer-events-none">
+                      <Youtube className="h-5 w-5 sm:h-6 sm:w-6 text-gray-400" />
+                    </div>
+                    <input
+                      type="url"
+                      value={url}
+                      onChange={(e) => setUrl(e.target.value)}
+                      placeholder="Paste YouTube URL here (e.g., youtube.com/shorts/...)"
+                      className="w-full pl-12 sm:pl-16 pr-4 sm:pr-6 py-4 sm:py-6 bg-white/5 backdrop-blur-xl border border-white/20 rounded-xl sm:rounded-2xl text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-white focus:border-transparent transition-all duration-300 text-base sm:text-lg shadow-2xl"
+                      disabled={loading}
+                    />
+                  </div>
+                </div>
+                
+                <div className="flex gap-3 sm:gap-4">
+                  <button
+                    type="submit"
+                    disabled={loading}
+                    className="flex-1 relative group overflow-hidden bg-white text-black py-4 sm:py-6 px-6 sm:px-8 rounded-xl sm:rounded-2xl font-bold text-base sm:text-lg hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-black transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 sm:gap-3 shadow-2xl"
+                  >
+                    <div className="absolute inset-0 bg-gradient-to-r from-black/0 via-black/10 to-black/0 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000"></div>
+                    {loading ? (
+                      <>
+                        <div className="w-5 h-5 sm:w-6 sm:h-6 border-2 border-black border-t-transparent rounded-full animate-spin"></div>
+                        <span className="hidden sm:inline">Analyzing Creator's Content...</span>
+                        <span className="sm:hidden">Analyzing...</span>
+                      </>
+                    ) : (
+                      <>
+                        <Search className="w-5 h-5 sm:w-6 sm:h-6" />
+                        <span className="hidden sm:inline">Find Series Videos</span>
+                        <span className="sm:hidden">Find Videos</span>
+                        <Sparkles className="w-4 h-4 sm:w-5 sm:h-5" />
+                      </>
+                    )}
+                  </button>
+                  
+                  {seriesVideos.length > 0 && (
+                    <button
+                      type="button"
+                      onClick={clearResults}
+                      className="px-6 sm:px-8 py-4 sm:py-6 bg-white/10 backdrop-blur-xl border border-white/20 text-white rounded-xl sm:rounded-2xl hover:bg-white/20 transition-all duration-300 font-medium shadow-xl"
+                    >
+                      Clear
+                    </button>
+                  )}
+                </div>
+              </form>
+            </div>
+          </div>
+
           {/* Enhanced Feedback Statistics Dashboard */}
           {feedbackStats.totalFeedback > 0 && (
             <div className="bg-white/5 backdrop-blur-xl rounded-xl sm:rounded-2xl p-4 sm:p-6 max-w-3xl mx-auto mb-12 sm:mb-16 border border-white/10 shadow-2xl">
@@ -657,62 +715,6 @@ Uncover spin-offs even the creator forgot they made.
               </div>
             </div>
           )}
-
-          {/* Enhanced Search Form */}
-          <div className="max-w-3xl mx-auto mb-12 sm:mb-16">
-            <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-6">
-              <div className="relative group">
-                <div className="absolute inset-0 bg-white rounded-xl sm:rounded-2xl blur-lg opacity-10 group-hover:opacity-20 transition-opacity"></div>
-                <div className="relative">
-                  <div className="absolute inset-y-0 left-0 pl-4 sm:pl-6 flex items-center pointer-events-none">
-                    <Youtube className="h-5 w-5 sm:h-6 sm:w-6 text-gray-400" />
-                  </div>
-                  <input
-                    type="url"
-                    value={url}
-                    onChange={(e) => setUrl(e.target.value)}
-                    placeholder="Paste YouTube URL here (e.g., youtube.com/shorts/...)"
-                    className="w-full pl-12 sm:pl-16 pr-4 sm:pr-6 py-4 sm:py-6 bg-white/5 backdrop-blur-xl border border-white/20 rounded-xl sm:rounded-2xl text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-white focus:border-transparent transition-all duration-300 text-base sm:text-lg shadow-2xl"
-                    disabled={loading}
-                  />
-                </div>
-              </div>
-              
-              <div className="flex gap-3 sm:gap-4">
-                <button
-                  type="submit"
-                  disabled={loading}
-                  className="flex-1 relative group overflow-hidden bg-white text-black py-4 sm:py-6 px-6 sm:px-8 rounded-xl sm:rounded-2xl font-bold text-base sm:text-lg hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-black transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 sm:gap-3 shadow-2xl"
-                >
-                  <div className="absolute inset-0 bg-gradient-to-r from-black/0 via-black/10 to-black/0 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000"></div>
-                  {loading ? (
-                    <>
-                      <div className="w-5 h-5 sm:w-6 sm:h-6 border-2 border-black border-t-transparent rounded-full animate-spin"></div>
-                      <span className="hidden sm:inline">Analyzing Creator's Content...</span>
-                      <span className="sm:hidden">Analyzing...</span>
-                    </>
-                  ) : (
-                    <>
-                      <Search className="w-5 h-5 sm:w-6 sm:h-6" />
-                      <span className="hidden sm:inline">Find Series Videos</span>
-                      <span className="sm:hidden">Find Videos</span>
-                      <Sparkles className="w-4 h-4 sm:w-5 sm:h-5" />
-                    </>
-                  )}
-                </button>
-                
-                {seriesVideos.length > 0 && (
-                  <button
-                    type="button"
-                    onClick={clearResults}
-                    className="px-6 sm:px-8 py-4 sm:py-6 bg-white/10 backdrop-blur-xl border border-white/20 text-white rounded-xl sm:rounded-2xl hover:bg-white/20 transition-all duration-300 font-medium shadow-xl"
-                  >
-                    Clear
-                  </button>
-                )}
-              </div>
-            </form>
-          </div>
 
           {/* Enhanced Error Message */}
           {error && (
